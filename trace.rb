@@ -1,25 +1,53 @@
-require 'rubygems'
-require 'mechanize'
+# coding: utf-8
+
+require "selenium-webdriver"
+require "headless"
+require "nokogiri"
+
+$progress_bar = 0;
 
 def getPhoneNumber()
-  puts("[!] Enter phone number [!]\n\n");
+  print("[!] Enter phone number [!]\n\n==> ");
   phoneNumber = gets().to_s;
   return (phoneNumber);
 end
 
 def fbProfileGet(phoneNumber)
-  agent = Mechanize.new;
-  page = agent.get("https://www.facebook.com/login/identify");
-  form = page.form_with(:id => "identify_yourself_flow");
-  form["email"] = phoneNumber;
-  button = form.button_with(:value => "Rechercher");
-  page = agent.submit(form, button);
-  puts(page.body);
+  Headless.ly do
+    res = "";
+    driver = Selenium::WebDriver.for :firefox;
+    wait = Selenium::WebDriver::Wait.new(:timeout => 10);
+    driver.navigate.to "http://www.facebook.com/login/identify";
+    element = driver.find_element(id: "identify_email");
+    element.send_keys phoneNumber;
+    element.submit;
+    sleep(3);
+    html = driver.page_source;
+    driver.quit;
+    page = Nokogiri::HTML(html);
+    page.css(".mvm").each do |profile|
+       res += profile.inner_html;
+    end
+    $progress_bar = 1;
+    return (res);
+  end
+end
+
+def loadingBar()
+  print("\nPlease wait while searching...\n");
+  while ($progress_bar == 0)
+    sleep(1);
+    print("|");
+  end
 end
 
 def main()
   phoneNumber = getPhoneNumber();
-  fbProfileGet(phoneNumber);
+  loadingTh = Thread.new { loadingBar() };
+  profile = fbProfileGet(phoneNumber);
+  loadingTh.join;
+  print("\n\n");
+  puts(profile);
 end
 
 main();
