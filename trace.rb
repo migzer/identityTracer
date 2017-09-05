@@ -1,9 +1,11 @@
+#!/usr/bin/ruby
 # coding: utf-8
 
 require "selenium-webdriver"
 require "headless"
 require "nokogiri"
 require "catpix"
+require "open-uri"
 
 $progress_bar = 0;
 
@@ -56,17 +58,29 @@ def getNamePic(profile, cond)
      end
 end
 
-def dispImg(imgUrl)
-  Catpix::print_image URRRRRRRRRRRL,
+def dispImg()
+  Catpix::print_image "img",
                       :limit_x => 1.0,
                       :limit_y => 0,
-                      :center_x => true,
-                      :center_y => true,
-                      :bg => "white",
                       :bg_fill => true;
 end
 
+def createImg(imgUrl)
+  open(imgUrl) { |img|
+    File.open("img", "wb") do |file|
+      file.puts img.read
+    end
+  }
+end
+
+def checkFileExist()
+  if (File.file?("img") == true)
+    `rm img`
+  end
+end
+
 def main()
+  checkFileExist();
   phoneNumber = getPhoneNumber();
   loadingTh = Thread.new { loadingBar() };
   profile = fbProfileGet(phoneNumber);
@@ -74,7 +88,9 @@ def main()
   print("\n\n");
   imgUrl = getNamePic(profile ,0);
   name = getNamePic(profile, 1);
-  puts(imgUrl, name);
+  puts(name);
+  createImg(imgUrl);
+  dispImg();
 end
 
 main();
