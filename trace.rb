@@ -10,8 +10,11 @@ require "open-uri"
 $progress_bar = 0;
 
 def getPhoneNumber()
-  print("[!] Enter phone number [!]\n\n==> ");
-  phoneNumber = gets().to_s;
+  phoneNumber = "ntm"
+  while (checkIsDigits(phoneNumber) == false)
+    print("[!] Enter phone number [!]\n\n==> ");
+    phoneNumber = gets().to_s;
+  end
   return (phoneNumber);
 end
 
@@ -77,6 +80,17 @@ def checkFileExist()
   if (File.file?("img") == true)
     `rm img`
   end
+end
+
+def checkIsDigits(str)
+  i = 0;
+  while (i < str.length - 1)
+    if (str[i] < '0' || str[i] > '9')
+      return (false);
+    end
+    i += 1;
+  end
+  return (true);
 end
 
 def main()
