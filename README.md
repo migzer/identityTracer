@@ -7,7 +7,7 @@ It displays, as it can, the profile picture and the name associated to the phone
 
 ### Installing
 
-In order to install, you just have to run
+In order to install, you just have to run:
 
 ````````````
 ./install.sh
